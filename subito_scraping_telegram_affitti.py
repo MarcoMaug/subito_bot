@@ -1,24 +1,32 @@
 import requests
 import pandas as pd
 import time
+import json
 import traceback
 from bs4 import BeautifulSoup
 import os.path
 import logging
 
-# Configure logging to write to a file
+def read_json_file(file_path):
+    with open(file_path, 'r') as file:
+        data = json.load(file)
+    return data
+
 logging.basicConfig(filename='subito_affitti.log',
                     level=logging.INFO,
                     format='%(asctime)s - %(levelname)s - %(message)s')
 
 
-token="5867783101:AAGAQNm1nBfbBiw_XrzT7AGj7AkS8CgfNyc"
-chat_id = "203360288"
+
+
+json_data = read_json_file('./config.json')
+token=json_data["token"]
+chat_id=json_data["chat_id"]
 
 
 
 
-url = 'https://www.subito.it/annunci-locali/affitto/appartamenti/?q=appartamento&rad=7500&lat=45.57122&lon=9.15921&ps=200&pe=700'
+url = f'https://www.subito.it/annunci-locali/affitto/appartamenti/?q=appartamento&rad=7500&lat=45.57122&lon=9.15921&ps={json_data["price_min"]}&pe={json_data["price_max"]}'
 nome_file_csv = 'appartamenti.csv'
 
 
@@ -28,10 +36,6 @@ def send_message(row, token, chat_id):
     url = f"https://api.telegram.org/bot{token}/sendMessage?chat_id={chat_id}&text={message}"
     requests.get(url).json()
     return 1
-
-
-# In[ ]:
-
 
 while (1):
     try:
