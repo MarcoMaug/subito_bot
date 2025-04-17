@@ -192,8 +192,8 @@ url_idealista = f'https://www.idealista.it/aree/affitto-case/con-prezzo_{price_m
 url_immobiliare = f'https://www.immobiliare.it/search-list/?idContratto=2&idCategoria=1&prezzoMinimo={price_min}&prezzoMassimo={price_max}&criterio=data&ordine=desc&__lang=it&vrt=45.481202%2C9.093933%3B45.487464%2C9.275208%3B45.606786%2C9.275208%3B45.662991%2C9.220276%3B45.671153%2C9.130325%3B45.644262%2C9.054108%3B45.599576%2C9.002609%3B45.481202%2C9.093933&pag=1&mapCenter=45.557343%2C9.165836&zoom=11'
 websites = {
             "subito":url,
-     #       "idealista":url_idealista,
-            "immobiliare": url_immobiliare
+            "idealista":url_idealista
+            #"immobiliare": url_immobiliare
             }
 nome_file_csv = 'appartamenti.csv'
 
