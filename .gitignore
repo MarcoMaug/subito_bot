@@ -2,3 +2,10 @@ venv
 appartamenti.csv
 subito_affitti.log
 config_template.json
+__pycache__
+auto.csv
+config.json
+subito_auto.log
+test.py
+website.txt
+bot.log
