@@ -26,5 +26,5 @@ def read_account_info(json_data):
 
 def send_message(message, token, chat_id):
     url = f"https://api.telegram.org/bot{token}/sendMessage?chat_id={chat_id}&text={message}"
-    response = requests.get(url).json()
-    return response.status_code
+    response = requests.get(url)
+    return response.status_code 
