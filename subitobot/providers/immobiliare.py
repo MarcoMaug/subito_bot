@@ -8,6 +8,8 @@ from .base import Provider
 
 logger = logging.getLogger("subitobot.immobiliare")
 
+HOME = "https://www.immobiliare.it/"
+
 
 def _find_results(next_data: dict) -> list:
     """Trova la lista 'results' dentro dehydratedState.queries, senza dipendere
@@ -38,7 +40,7 @@ class ImmobiliareProvider(Provider):
 
     def fetch(self, search: dict) -> list[Listing]:
         url = search["url"]
-        data = self.fetcher.get_next_data(url)
+        data = self.fetcher.get_next_data(url, warmup=HOME)
         results = _find_results(data)
         if not results:
             logger.error("Nessun risultato in __NEXT_DATA__ per '%s'", search.get("name"))

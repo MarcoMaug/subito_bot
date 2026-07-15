@@ -62,9 +62,13 @@ class Fetcher:
                 time.sleep(self.backoff * attempt)
         raise FetchError(str(last_exc))
 
-    def get_next_data(self, url: str) -> dict:
-        """Scarica una pagina e restituisce il JSON incorporato in __NEXT_DATA__."""
-        resp = self.get(url)
+    def get_next_data(self, url: str, warmup: str | None = None) -> dict:
+        """Scarica una pagina e restituisce il JSON incorporato in __NEXT_DATA__.
+
+        Con `warmup` usa una sessione nuova che visita prima quella pagina
+        (imposta i cookie anti-bot): serve per gli endpoint come
+        immobiliare `/search-list/` che, colpiti "a freddo", danno 403."""
+        resp = self.get_fresh(url, warmup=warmup) if warmup else self.get(url)
         match = _NEXT_DATA_RE.search(resp.text)
         if not match:
             raise FetchError(f"__NEXT_DATA__ non trovato in {url}")
