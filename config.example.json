@@ -1,7 +1,7 @@
 {
     "telegram": {
         "token": "IL_TUO_BOT_TOKEN",
-        "chat_id": "203360288"
+        "chat_id": "IL_TUO_CHAT_ID"
     },
     "poll_seconds": 300,
     "searches": [
