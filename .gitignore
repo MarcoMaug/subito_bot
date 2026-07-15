@@ -1,11 +1,13 @@
-venv
-appartamenti.csv
-subito_affitti.log
-config_template.json
-__pycache__
-auto.csv
+venv/
+__pycache__/
+*.pyc
+
+# configurazione con token e dati locali
 config.json
-subito_auto.log
-test.py
-website.txt
-bot.log
+
+# stato e log
+seen.db
+*.log
+
+# vecchi dati/scarti
+*.csv
