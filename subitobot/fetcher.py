@@ -45,12 +45,18 @@ class Fetcher:
         session.headers.update(self.DEFAULT_HEADERS)
         return session
 
-    def get(self, url: str, **kwargs):
+    @staticmethod
+    def _proxies(proxy: str | None):
+        """Da una stringa 'http://user:pass@host:port' costruisce il dict per curl_cffi."""
+        return {"http": proxy, "https": proxy} if proxy else None
+
+    def get(self, url: str, proxy: str | None = None, **kwargs):
         """GET con retry esponenziale. Rilancia FetchError se esaurisce i tentativi."""
+        proxies = self._proxies(proxy)
         last_exc: Exception | None = None
         for attempt in range(1, self.retries + 1):
             try:
-                resp = self.session.get(url, timeout=self.timeout, **kwargs)
+                resp = self.session.get(url, timeout=self.timeout, proxies=proxies, **kwargs)
                 if resp.status_code == 200:
                     return resp
                 logger.warning("GET %s -> HTTP %s (tentativo %s/%s)", url, resp.status_code, attempt, self.retries)
@@ -62,13 +68,13 @@ class Fetcher:
                 time.sleep(self.backoff * attempt)
         raise FetchError(str(last_exc))
 
-    def get_next_data(self, url: str, warmup: str | None = None) -> dict:
+    def get_next_data(self, url: str, warmup: str | None = None, proxy: str | None = None) -> dict:
         """Scarica una pagina e restituisce il JSON incorporato in __NEXT_DATA__.
 
         Con `warmup` usa una sessione nuova che visita prima quella pagina
         (imposta i cookie anti-bot): serve per gli endpoint come
         immobiliare `/search-list/` che, colpiti "a freddo", danno 403."""
-        resp = self.get_fresh(url, warmup=warmup) if warmup else self.get(url)
+        resp = self.get_fresh(url, warmup=warmup, proxy=proxy) if warmup else self.get(url, proxy=proxy)
         match = _NEXT_DATA_RE.search(resp.text)
         if not match:
             raise FetchError(f"__NEXT_DATA__ non trovato in {url}")
@@ -78,7 +84,7 @@ class Fetcher:
         resp = self.get(url, **kwargs)
         return resp.json()
 
-    def get_fresh(self, url: str, warmup: str | None = None, headers: dict | None = None):
+    def get_fresh(self, url: str, warmup: str | None = None, headers: dict | None = None, proxy: str | None = None):
         """GET usando una sessione NUOVA a ogni tentativo, con eventuale warm-up.
 
         Serve per i siti con DataDome (es. Idealista): una sessione già "flaggata"
@@ -86,17 +92,18 @@ class Fetcher:
         Il warm-up (visita a una pagina, di solito la homepage) imposta i cookie
         anti-bot prima di richiedere la pagina di ricerca.
         """
+        proxies = self._proxies(proxy)
         last_exc: Exception | None = None
         for attempt in range(1, self.retries + 1):
             session = self._new_session()
             try:
                 if warmup:
-                    session.get(warmup, timeout=self.timeout)
+                    session.get(warmup, timeout=self.timeout, proxies=proxies)
                     time.sleep(1)
                 req_headers = {"Referer": warmup} if warmup else {}
                 if headers:
                     req_headers.update(headers)
-                resp = session.get(url, timeout=self.timeout, headers=req_headers)
+                resp = session.get(url, timeout=self.timeout, headers=req_headers, proxies=proxies)
                 if resp.status_code == 200 and "geo.captcha" not in resp.text:
                     return resp
                 logger.warning("GET(fresh) %s -> HTTP %s (tentativo %s/%s)", url, resp.status_code, attempt, self.retries)

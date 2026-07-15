@@ -41,7 +41,7 @@ class IdealistaProvider(Provider):
 
     def fetch(self, search: dict) -> list[Listing]:
         url = search["url"]
-        resp = self.fetcher.get_fresh(url, warmup=HOME)
+        resp = self.fetcher.get_fresh(url, warmup=HOME, proxy=search.get("proxy"))
         soup = BeautifulSoup(resp.text, "html.parser")
         articles = soup.find_all("article", class_="item")
 

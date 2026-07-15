@@ -37,6 +37,10 @@ cp config.example.json config.json   # poi inserisci token e ricerche
     impostati (basta copiarlo dal browser).
   - `filters` (opzionale): filtri prima della notifica, es. `convenienza_min`
     (auto) o `price_max`.
+  - `proxy` (opzionale): `http://utente:password@host:porta`. Senza, la richiesta
+    è diretta. Immobiliare e Idealista sono bloccati dagli IP datacenter dei
+    VPS: per farli girare su server serve un **proxy residenziale/ISP** (IP
+    italiano preferibile). Subito funziona anche senza.
 
 ## Uso
 

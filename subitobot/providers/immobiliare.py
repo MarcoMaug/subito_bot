@@ -40,7 +40,7 @@ class ImmobiliareProvider(Provider):
 
     def fetch(self, search: dict) -> list[Listing]:
         url = search["url"]
-        data = self.fetcher.get_next_data(url, warmup=HOME)
+        data = self.fetcher.get_next_data(url, warmup=HOME, proxy=search.get("proxy"))
         results = _find_results(data)
         if not results:
             logger.error("Nessun risultato in __NEXT_DATA__ per '%s'", search.get("name"))

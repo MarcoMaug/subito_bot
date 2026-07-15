@@ -24,13 +24,15 @@
             "name": "affitti-immobiliare",
             "provider": "immobiliare",
             "category": "affitti",
-            "url": "https://www.immobiliare.it/affitto-case/milano/?criterio=dataModifica&ordine=desc&prezzoMassimo=800"
+            "url": "https://www.immobiliare.it/affitto-case/milano/?criterio=dataModifica&ordine=desc&prezzoMassimo=800",
+            "proxy": "http://username:password@host:porta"
         },
         {
             "name": "affitti-idealista",
             "provider": "idealista",
             "category": "affitti",
-            "url": "https://www.idealista.it/affitto-case/milano-milano/?ordine=pubblicazione-desc"
+            "url": "https://www.idealista.it/affitto-case/milano-milano/?ordine=pubblicazione-desc",
+            "proxy": "http://username:password@host:porta"
         }
     ]
 }

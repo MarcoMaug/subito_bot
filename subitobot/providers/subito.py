@@ -57,7 +57,7 @@ class SubitoProvider(Provider):
     def fetch(self, search: dict) -> list[Listing]:
         url = search["url"]
         category = search.get("category", "affitti")
-        data = self.fetcher.get_next_data(url)
+        data = self.fetcher.get_next_data(url, proxy=search.get("proxy"))
         try:
             items = data["props"]["pageProps"]["initialState"]["items"]["originalList"]
         except (KeyError, TypeError):
