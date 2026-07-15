@@ -2,12 +2,14 @@ from __future__ import annotations
 
 from ..fetcher import Fetcher
 from .base import Provider
+from .idealista import IdealistaProvider
+from .immobiliare import ImmobiliareProvider
 from .subito import SubitoProvider
 
-# Registry dei provider disponibili. Immobiliare e Idealista sono nel backlog:
-# useranno lo stesso Fetcher (curl_cffi) e la stessa interfaccia Provider.
 _REGISTRY: dict[str, type[Provider]] = {
     "subito": SubitoProvider,
+    "immobiliare": ImmobiliareProvider,
+    "idealista": IdealistaProvider,
 }
 
 
