@@ -24,7 +24,11 @@
             "name": "affitti-immobiliare",
             "provider": "immobiliare",
             "category": "affitti",
-            "url": "https://www.immobiliare.it/affitto-case/milano/?criterio=dataModifica&ordine=desc&prezzoMassimo=800",
+            "urls": [
+                "https://www.immobiliare.it/affitto-case/milano/?criterio=dataModifica&ordine=desc&prezzoMassimo=800",
+                "https://www.immobiliare.it/affitto-case/monza-brianza-provincia/?criterio=dataModifica&ordine=desc&prezzoMassimo=800",
+                "https://www.immobiliare.it/affitto-case/lodi-provincia/?criterio=dataModifica&ordine=desc&prezzoMassimo=800"
+            ],
             "proxy": "http://username:password@host:porta"
         },
         {

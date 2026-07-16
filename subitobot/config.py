@@ -27,9 +27,12 @@ def load_config(path: str = "config.json") -> dict:
 
     names = set()
     for i, s in enumerate(searches):
-        for req in ("name", "provider", "category", "url"):
+        for req in ("name", "provider", "category"):
             if not s.get(req):
                 raise ConfigError(f"searches[{i}]: manca il campo obbligatorio '{req}'.")
+        urls = s.get("urls")
+        if not s.get("url") and not (isinstance(urls, list) and urls):
+            raise ConfigError(f"searches[{i}]: serve 'url' oppure 'urls' (lista non vuota).")
         if s["category"] not in ("auto", "affitti"):
             raise ConfigError(f"searches[{i}] ('{s['name']}'): category deve essere 'auto' o 'affitti'.")
         if s["name"] in names:
