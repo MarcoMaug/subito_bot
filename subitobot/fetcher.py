@@ -2,7 +2,9 @@ from __future__ import annotations
 
 import json
 import logging
+import random
 import re
+import string
 import time
 
 from curl_cffi import requests as creq
@@ -50,6 +52,15 @@ class Fetcher:
         """Da una stringa 'http://user:pass@host:port' costruisce il dict per curl_cffi."""
         return {"http": proxy, "https": proxy} if proxy else None
 
+    @staticmethod
+    def _rotate_proxy_session(proxy: str) -> str:
+        """Sostituisce il 'session-XXXX' nella password del proxy (sintassi iproyal)
+        con un id casuale: senza questo, ogni retry su get_fresh riusa la stessa IP
+        sticky, quindi se quell'IP e' gia' bloccata (es. Akamai su immobiliare.it)
+        tutti i tentativi falliscono identici invece di provare IP diverse."""
+        new_id = "".join(random.choices(string.ascii_letters + string.digits, k=8))
+        return re.sub(r"session-[A-Za-z0-9]+", f"session-{new_id}", proxy)
+
     def get(self, url: str, proxy: str | None = None, **kwargs):
         """GET con retry esponenziale. Rilancia FetchError se esaurisce i tentativi."""
         proxies = self._proxies(proxy)
@@ -92,10 +103,11 @@ class Fetcher:
         Il warm-up (visita a una pagina, di solito la homepage) imposta i cookie
         anti-bot prima di richiedere la pagina di ricerca.
         """
-        proxies = self._proxies(proxy)
         last_exc: Exception | None = None
         for attempt in range(1, self.retries + 1):
             session = self._new_session()
+            attempt_proxy = self._rotate_proxy_session(proxy) if proxy else None
+            proxies = self._proxies(attempt_proxy)
             try:
                 if warmup:
                     session.get(warmup, timeout=self.timeout, proxies=proxies)

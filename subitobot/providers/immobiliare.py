@@ -3,6 +3,7 @@ from __future__ import annotations
 import logging
 import re
 
+from ..fetcher import FetchError
 from ..models import Listing
 from .base import Provider
 
@@ -50,8 +51,15 @@ class ImmobiliareProvider(Provider):
     def fetch(self, search: dict) -> list[Listing]:
         seen_ids: set[str] = set()
         listings: list[Listing] = []
-        for url in _search_urls(search):
-            data = self.fetcher.get_next_data(url, warmup=HOME, proxy=search.get("proxy"))
+        urls = _search_urls(search)
+        failed = 0
+        for url in urls:
+            try:
+                data = self.fetcher.get_next_data(url, warmup=HOME, proxy=search.get("proxy"))
+            except FetchError as exc:
+                logger.warning("Ricerca '%s': download fallito per '%s': %s", search.get("name"), url, exc)
+                failed += 1
+                continue
             results = _find_results(data)
             if not results:
                 logger.error("Nessun risultato in __NEXT_DATA__ per '%s' (%s)", search.get("name"), url)
@@ -80,5 +88,7 @@ class ImmobiliareProvider(Provider):
                         },
                     )
                 )
+        if failed and failed == len(urls):
+            raise FetchError(f"Tutte le {failed} URL di '{search.get('name')}' hanno fallito il download")
         logger.info("Ricerca '%s': %s annunci letti", search.get("name"), len(listings))
         return listings
