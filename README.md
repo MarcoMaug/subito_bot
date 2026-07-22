@@ -36,7 +36,9 @@ cp config.example.json config.json   # poi inserisci token e ricerche
   - `url`: **l'URL normale di ricerca del sito**, con tutti i filtri già
     impostati (basta copiarlo dal browser).
   - `filters` (opzionale): filtri prima della notifica, es. `convenienza_min`
-    (auto) o `price_max`.
+    (auto), `price_max` o `exclude_keywords` (lista di parole/frasi, case
+    insensitive: se il titolo le contiene l'annuncio viene comunque salvato
+    nel csv ma non notificato via Telegram).
   - `proxy` (opzionale): `http://utente:password@host:porta`. Senza, la richiesta
     è diretta. Immobiliare e Idealista sono bloccati dagli IP datacenter dei
     VPS: per farli girare su server serve un **proxy residenziale/ISP** (IP

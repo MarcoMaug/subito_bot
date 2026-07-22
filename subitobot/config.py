@@ -38,6 +38,11 @@ def load_config(path: str = "config.json") -> dict:
         if s["name"] in names:
             raise ConfigError(f"Nome ricerca duplicato: '{s['name']}' (devono essere unici).")
         names.add(s["name"])
+        exclude_keywords = (s.get("filters") or {}).get("exclude_keywords")
+        if exclude_keywords is not None and (
+            not isinstance(exclude_keywords, list) or not all(isinstance(k, str) for k in exclude_keywords)
+        ):
+            raise ConfigError(f"searches[{i}] ('{s['name']}'): filters.exclude_keywords deve essere una lista di stringhe.")
 
     cfg.setdefault("poll_seconds", 300)
     return cfg

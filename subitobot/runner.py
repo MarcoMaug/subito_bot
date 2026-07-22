@@ -3,6 +3,7 @@ from __future__ import annotations
 import logging
 import time
 
+from .csv_export import append_listings
 from .fetcher import Fetcher, FetchError
 from .notifier import TelegramNotifier
 from .providers import get_provider
@@ -13,7 +14,7 @@ logger = logging.getLogger("subitobot.runner")
 
 def _passes_filters(listing, filters: dict) -> bool:
     """Filtri opzionali applicati prima di notificare (l'annuncio resta comunque
-    marcato come 'visto' per non ri-notificarlo)."""
+    salvato nel csv e marcato come 'visto' per non ri-notificarlo)."""
     conv_min = filters.get("convenienza_min")
     if conv_min is not None:
         conv = listing.extra.get("convenienza")
@@ -22,6 +23,11 @@ def _passes_filters(listing, filters: dict) -> bool:
     price_max = filters.get("price_max")
     if price_max is not None and listing.price is not None and listing.price > price_max:
         return False
+    exclude_keywords = filters.get("exclude_keywords")
+    if exclude_keywords:
+        title_lower = listing.title.lower()
+        if any(kw.lower() in title_lower for kw in exclude_keywords):
+            return False
     return True
 
 
@@ -35,6 +41,8 @@ def run_search(search: dict, fetcher: Fetcher, store: Store, notifier: TelegramN
     known = store.known_ids(name)
     is_seed = store.count(name) == 0
     new = [l for l in listings if l.id not in known]
+
+    append_listings(name, search["category"], new)
 
     if is_seed:
         # Primo giro: registra tutto senza notificare, per non spammare gli annunci esistenti.
