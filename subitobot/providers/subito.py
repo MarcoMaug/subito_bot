@@ -83,13 +83,13 @@ def _solve_3x3(a: list[list[float]]) -> tuple[float, float, float] | None:
 
 
 def _convenienza(model: tuple[float, float, float] | None, price, km, anno):
-    """Indice di convenienza: quanto l'annuncio è sotto il prezzo previsto dal
-    modello per quel km/anno. Non scende mai sotto 0 (0 = non conveniente)."""
+    """Indice di convenienza: quanto l'annuncio è sotto (positivo) o sopra
+    (negativo) il prezzo previsto dal modello per quel km/anno."""
     if model is None or not price or not km or not anno:
         return None
     b0, b1, b2 = model
     prezzo_previsto = b0 + b1 * km + b2 * anno
-    return round(max(0.0, prezzo_previsto - price))
+    return round(prezzo_previsto - price)
 
 
 class SubitoProvider(Provider):
